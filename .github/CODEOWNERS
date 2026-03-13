@@ -1,0 +1,15 @@
+# Global fallback
+* @lkaric
+
+# ZKP-sensitive code — requires security review
+packages/zkp-core/ @lkaric
+apps/svc-verify/ @lkaric
+packages/db/src/schema/anon/ @lkaric
+
+# Auth domain
+packages/auth/ @lkaric
+apps/web/src/server/domains/auth/ @lkaric
+
+# Infrastructure
+docker-compose.yml @lkaric
+.github/workflows/ @lkaric

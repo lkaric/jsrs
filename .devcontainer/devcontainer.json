@@ -1,0 +1,34 @@
+{
+  "name": "JSRS Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "onCreateCommand": "npm install -g pnpm@9.15.2 && pnpm install",
+  "postCreateCommand": "cp .env.example .env.local",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "biomejs.biome",
+        "ms-azuretools.vscode-docker",
+        "bradlc.vscode-tailwindcss",
+        "drizzle.drizzle-vscode"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "quickfix.biome": "explicit",
+          "source.organizeImports.biome": "explicit"
+        }
+      }
+    }
+  },
+  "forwardPorts": [3000, 3001, 5432],
+  "portsAttributes": {
+    "3000": { "label": "Web App" },
+    "3001": { "label": "svc-verify" },
+    "5432": { "label": "PostgreSQL" }
+  }
+}

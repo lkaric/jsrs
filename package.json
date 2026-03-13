@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "jsrs",
+  "version": "0.0.0",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "author": {
+    "email": "lazar@js.rs",
+    "name": "Lazar Karic",
+    "url": "https://lazar.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsrs/jsrs.git"
+  },
+  "homepage": "https://js.rs",
+  "bugs": {
+    "url": "https://github.com/jsrs/jsrs/issues"
+  },
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "turbo typecheck",
+    "db:generate": "turbo db:generate --filter=@jsrs/db",
+    "db:migrate": "turbo db:migrate --filter=@jsrs/db",
+    "db:studio": "turbo db:studio --filter=@jsrs/db"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.6",
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "lefthook": "^1.9.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=24.13.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.2"
+}
