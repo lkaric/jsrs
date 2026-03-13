@@ -1,72 +1,65 @@
-# JSRS — Anonymous Tech Reviews + Job Board
+# JSRS — Anonymous Tech Reviews + Job Board 🔏
 
 A Glassdoor alternative for the tech industry with **cryptographic anonymity guarantees** using Zero-Knowledge Proofs. Employees verify their employment via work email and submit anonymous reviews and salary data that cannot be linked back to them — not even by the platform operator.
 
 [![CI](https://github.com/lkaric/jsrs/actions/workflows/ci.yml/badge.svg)](https://github.com/lkaric/jsrs/actions/workflows/ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
 
-## Tech Stack
+## ⚡ Quick Start
 
-| Layer | Technology |
-|---|---|
-| Monorepo | Turborepo + pnpm workspaces |
-| Full-stack app | TanStack Start (SSR + server functions) |
-| Auth | better-auth (Organizations plugin) |
-| ORM | Drizzle ORM |
-| DB | PostgreSQL |
-| ZKP | Semaphore (off-chain) + snarkjs |
-| UI | shadcn/ui + Tailwind CSS v4 |
-| Email | Resend |
-
-## Quick Start
-
-### Prerequisites
-- Node.js >= 24.13.0
-- pnpm >= 9
-- Docker + Docker Compose
-
-### Setup
+**Prerequisites:** Node.js >= 24.13.0, pnpm >= 9, Docker
 
 ```bash
 git clone https://github.com/lkaric/jsrs
 cd jsrs
 pnpm install
-cp .env.example .env.local
-# Edit .env.local with your secrets
+cp .env.example .env.local   # fill in secrets
 docker compose up -d
-pnpm db:generate
-pnpm db:migrate
+pnpm db:generate && pnpm db:migrate
 pnpm dev
 ```
 
-The web app runs at `http://localhost:3000` and svc-verify at `http://localhost:3001`.
+Web app at `http://localhost:3000` — svc-verify at `http://localhost:3001`.
 
-## How Anonymity Works
+For the full setup guide including env vars, troubleshooting, and individual app commands, see [docs/development.md](./docs/development.md).
 
-1. **Enrollment**: User verifies work email → browser generates a cryptographic identity secret → commitment (hash of secret) is added to a company-specific Merkle tree → email mapping is immediately deleted
-2. **Review Submission**: Browser generates a Zero-Knowledge Proof proving membership in the company's Merkle tree without revealing which leaf → server verifies proof via svc-verify → review is stored with no link to user identity
-3. **Double-Submit Prevention**: Nullifier hashes (derived from identity secret + scope) prevent the same identity from submitting twice per company per scope
+## 🔒 How Anonymity Works
 
-See [docs/zkp-system.md](./docs/zkp-system.md) for a detailed explanation.
+1. **Enrollment** — Work email verified via OTP → browser generates cryptographic identity secret → commitment added to company Merkle tree → email mapping immediately deleted
+2. **Proof generation** — Browser generates a ZKP proving Merkle membership without revealing which leaf
+3. **Submission** — Server verifies proof via svc-verify → review stored with zero link to user identity
 
-## Project Structure
+See [docs/zkp-system.md](./docs/zkp-system.md) for a full explanation.
+
+## 📁 Project Structure
 
 ```
 apps/
-  web/          # TanStack Start app (SSR + server functions)
+  web/          # TanStack Start — public site + employer dashboard
   svc-verify/   # Internal Hono service for ZKP verification
 packages/
   db/           # Drizzle schema + migrations
   auth/         # better-auth configuration
   ui/           # shadcn/ui components
   types/        # Shared TypeScript types
-  zkp-core/     # ZKP utilities (commitment, nullifier, proof, merkle)
+  zkp-core/     # ZKP utilities (commitment, nullifier, proof, Merkle)
 ```
 
-## Contributing
+See [docs/architecture.md](./docs/architecture.md) for tech stack, domain model, and key decisions.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+## 📚 Docs
 
-## License
+| Document | What's in it |
+|---|---|
+| [docs/architecture.md](./docs/architecture.md) | Tech stack, schema domains, key decisions |
+| [docs/development.md](./docs/development.md) | Full dev setup, commands, env vars |
+| [docs/zkp-system.md](./docs/zkp-system.md) | ZKP concepts, enrollment + proof flows |
+| [docs/contributing-zkp.md](./docs/contributing-zkp.md) | How to safely modify ZKP code |
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## 📄 License
 
 GPL-3.0-or-later — see [LICENSE](./LICENSE)
