@@ -121,3 +121,27 @@ All routes are HMAC-secured. Never exposed publicly.
 | 4 | Anonymous reviews |
 | 5 | Salary data |
 | 6 | Launch prep (rate limiting, CSP, logging, Neon) |
+
+---
+
+## Deployment
+
+Both apps deploy to **Cloudflare Workers**. See [docs/deployment.md](deployment.md) for full setup guide.
+
+### Service Binding Topology
+
+```
+Internet
+    │
+    ▼
+┌─────────────────────────┐
+│  jsrs-web (Worker)      │  nodejs_compat, public
+│  apps/web               │
+│                         │
+│  env.SVC_VERIFY.fetch() │──── Cloudflare Service Binding ────▶ jsrs-svc-verify
+└─────────────────────────┘                                        (no public URL)
+```
+
+- `jsrs-svc-verify` is never reachable from the internet — only via the binding from `jsrs-web`
+- No `SVC_VERIFY_URL` env var needed; Cloudflare routes the call internally
+- `wrangler.toml` files live in each app directory (`apps/web/`, `apps/svc-verify/`) — added when apps are scaffolded

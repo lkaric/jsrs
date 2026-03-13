@@ -64,6 +64,12 @@ packages/db/src/schema/
 
 ---
 
+## Key Decisions
+
+- `SVC_VERIFY_URL` / `SVC_VERIFY_HMAC_SECRET` are **not needed** — `svc-verify` is accessed exclusively via Cloudflare Service Binding (`env.SVC_VERIFY.fetch()`). No HTTP transport between apps; no URL or HMAC secret to manage.
+
+---
+
 ## Things to Never Do
 
 - Never hand-edit `packages/db/src/schema/auth/` — regenerate with `auth@latest generate`
