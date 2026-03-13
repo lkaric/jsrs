@@ -2,7 +2,7 @@
 
 A Glassdoor alternative for the tech industry with **cryptographic anonymity guarantees** using Zero-Knowledge Proofs. Employees verify their employment via work email and submit anonymous reviews and salary data that cannot be linked back to them — not even by the platform operator.
 
-[![CI](https://github.com/your-org/jsrs/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/jsrs/actions/workflows/ci.yml)
+[![CI](https://github.com/lkaric/jsrs/actions/workflows/ci.yml/badge.svg)](https://github.com/lkaric/jsrs/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 ## Tech Stack

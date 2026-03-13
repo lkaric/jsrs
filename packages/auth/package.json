@@ -1,0 +1,27 @@
+{
+  "name": "@jsrs/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./client": {
+      "import": "./src/auth-client.ts",
+      "types": "./src/auth-client.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "auth:generate": "better-auth generate"
+  },
+  "dependencies": {
+    "@jsrs/db": "workspace:*",
+    "better-auth": "^1.2.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
