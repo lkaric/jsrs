@@ -22,7 +22,7 @@ export const auth = betterAuth({
   },
   plugins: [
     organization({
-      allowUserCreateOrganization: true,
+      allowUserToCreateOrganization: true,
     }),
   ],
   session: {
