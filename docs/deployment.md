@@ -75,12 +75,9 @@ enabled = true
 
 ```toml
 name = "jsrs-web"
-main = ".output/server/index.mjs"
+main = "@tanstack/react-start/server-entry"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
-
-[assets]
-directory = ".output/public"
 
 [[services]]
 binding = "SVC_VERIFY"
@@ -89,6 +86,8 @@ service = "jsrs-svc-verify"
 [observability]
 enabled = true
 ```
+
+> `main = "@tanstack/react-start/server-entry"` is a virtual module resolved by `@cloudflare/vite-plugin` — not a path to a built file.
 
 ---
 
@@ -179,7 +178,6 @@ After initial setup:
 1. Merge a PR to `main`
 2. Confirm CI workflow completes — check the **Actions** tab
 3. Confirm Deploy workflow triggers via `workflow_run` (appears as a separate run)
-4. **Expected:** both deploy jobs fail with "no wrangler.toml found" — apps are not yet scaffolded. This is correct. Confirm the failure is config/auth related, not a Wrangler auth error.
-5. When `apps/svc-verify` is scaffolded (Phase 3): add `wrangler.toml` → `deploy-svc-verify` job should pass
-6. When `apps/web` is scaffolded (Phase 1, issue #5): add `wrangler.toml` → `deploy-web` job should pass
-7. End-to-end: push a change to `main` → confirm both Workers updated in Cloudflare dashboard
+4. **Expected:** `deploy-svc-verify` fails with "no wrangler.toml found" — `apps/svc-verify` not yet scaffolded (Phase 3). `deploy-web` never runs since it `needs: deploy-svc-verify`. Confirm the failure is a missing file, not a Wrangler auth error.
+5. When `apps/svc-verify` is scaffolded (Phase 3): add `wrangler.toml` → both jobs should pass
+6. End-to-end: push a change to `main` → confirm both Workers updated in Cloudflare dashboard
