@@ -26,6 +26,10 @@
     "db:studio": {
       "cache": false,
       "persistent": true
+    },
+    "deploy": {
+      "dependsOn": ["^build"],
+      "cache": false
     }
   }
 }

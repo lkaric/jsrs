@@ -94,8 +94,6 @@ All variables are documented in `.env.example`. Key groups:
 | `GITHUB_CLIENT_ID/SECRET` | GitHub OAuth |
 | `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
 | `RESEND_API_KEY` | OTP email delivery |
-| `SVC_VERIFY_URL` | Web app → svc-verify |
-| `SVC_VERIFY_HMAC_SECRET` | HMAC auth between web + svc-verify |
 
 ## Dev Container
 
