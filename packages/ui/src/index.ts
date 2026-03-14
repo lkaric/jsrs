@@ -25,16 +25,6 @@ export {
   DialogTrigger,
 } from './components/dialog';
 
-export {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormField,
-} from './components/form';
 export type { InputProps } from './components/input';
 export { Input } from './components/input';
 export { Label } from './components/label';
