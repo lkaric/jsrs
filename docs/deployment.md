@@ -65,7 +65,7 @@ These files live in each app directory. Add them when the apps are scaffolded.
 name = "jsrs-svc-verify"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
 
 [observability]
 enabled = true
@@ -77,7 +77,7 @@ enabled = true
 name = "jsrs-web"
 main = "@tanstack/react-start/server-entry"
 compatibility_date = "2025-01-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
 
 [[routes]]
 pattern = "js.rs"
@@ -91,7 +91,53 @@ service = "jsrs-svc-verify"
 enabled = true
 ```
 
+> `nodejs_compat_populate_process_env` copies all Cloudflare bindings (secrets + vars) into `process.env`, enabling standard Node.js-style env access. Without it, you must use `import { env } from "cloudflare:workers"` instead.
+
 > `main = "@tanstack/react-start/server-entry"` is a virtual module resolved by `@cloudflare/vite-plugin` — not a path to a built file.
+
+---
+
+## Secrets vs Vars
+
+Cloudflare has two ways to pass configuration to a Worker:
+
+| Type | Where defined | Encrypted | Use for |
+|---|---|---|---|
+| **Secret** | `wrangler secret put` / CI pipeline | Yes | Sensitive values (API keys, DB URLs, auth secrets) |
+| **Var** | `wrangler.toml` `[vars]` block | No (committed to repo) | Non-sensitive config (feature flags, public URLs) |
+
+Both are available at runtime via `process.env.<NAME>` (enabled by `nodejs_compat_populate_process_env`).
+
+---
+
+## How Secrets Flow from GitHub → Cloudflare
+
+The pipeline handles secret delivery automatically — you never run `wrangler secret put` manually in production.
+
+```
+GitHub Actions secret
+        │
+        ▼
+  deploy.yml env: block      ← makes the value available to the runner
+        │
+        ▼
+  wrangler-action secrets: block  ← calls `wrangler secret put` for each name
+        │
+        ▼
+  Cloudflare Worker secret   ← stored encrypted, bound to the Worker
+        │
+        ▼
+  process.env.NAME           ← accessible in server functions at runtime
+```
+
+In `deploy.yml`, each secret appears in two places:
+
+```yaml
+secrets: |
+  DATABASE_URL          # tells wrangler-action to call `wrangler secret put DATABASE_URL`
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}   # provides the value from GitHub secrets
+```
 
 ---
 
@@ -99,41 +145,40 @@ enabled = true
 
 Set these in **Settings → Secrets and variables → Actions**:
 
-| Secret | Used by | Description |
+### Pipeline authentication
+
+| Secret | Description |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | Wrangler auth token — needs Workers Edit + Secrets Write permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+
+### Worker secrets (pushed to Cloudflare on each deploy)
+
+| Secret | Worker | Description |
 |---|---|---|
-| `CLOUDFLARE_API_TOKEN` | Both | Wrangler authentication — needs Workers edit permissions |
-| `CLOUDFLARE_ACCOUNT_ID` | Both | Your Cloudflare account ID |
-| `DATABASE_URL` | Both | Neon PostgreSQL connection string |
-| `BETTER_AUTH_SECRET` | Both | Random 32-byte secret for better-auth session signing |
-| `BETTER_AUTH_URL` | web | Public base URL, e.g. `https://jsrs.app` — used for OAuth callbacks |
+| `DATABASE_URL` | both | Neon PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | both | 32-byte secret for session signing (`openssl rand -base64 32`) |
+| `BETTER_AUTH_URL` | web | Public base URL — used for OAuth callback construction, e.g. `https://js.rs` |
 | `GH_CLIENT_ID` | web | GitHub OAuth app client ID |
 | `GH_CLIENT_SECRET` | web | GitHub OAuth app client secret |
 | `GOOGLE_CLIENT_ID` | web | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | web | Google OAuth client secret |
-| `RESEND_API_KEY` | web | Resend API key for OTP email delivery |
-| `EMAIL_FROM` | web | Sender address, e.g. `noreply@jsrs.app` |
+| `RESEND_API_KEY` | web | Resend API key for transactional email |
+| `EMAIL_FROM` | web | Sender address, e.g. `noreply@js.rs` |
 
 **Not needed:** `SVC_VERIFY_URL`, `SVC_VERIFY_HMAC_SECRET` — the Service Binding replaces HTTP transport entirely.
 
 ---
 
-## Environment Variable Mapping
+## Local Development vs Production
 
-Local `.env.local` → Cloudflare Worker secrets:
+| | Local | Production |
+|---|---|---|
+| **Config file** | `apps/web/.dev.vars` (gitignored) | GitHub Actions secrets |
+| **How it's applied** | Wrangler reads `.dev.vars` automatically on `pnpm dev` | `wrangler-action` calls `wrangler secret put` on each deploy |
+| **Accessible via** | `process.env.NAME` | `process.env.NAME` |
 
-```
-DATABASE_URL          → wrangler secret put DATABASE_URL
-BETTER_AUTH_SECRET    → wrangler secret put BETTER_AUTH_SECRET
-BETTER_AUTH_URL       → wrangler secret put BETTER_AUTH_URL
-GH_CLIENT_ID      → wrangler secret put GH_CLIENT_ID
-GH_CLIENT_SECRET  → wrangler secret put GH_CLIENT_SECRET
-GOOGLE_CLIENT_ID      → wrangler secret put GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET  → wrangler secret put GOOGLE_CLIENT_SECRET
-RESEND_API_KEY        → wrangler secret put RESEND_API_KEY
-EMAIL_FROM            → wrangler secret put EMAIL_FROM
-```
-
-Worker secrets are set per-Worker. Run `wrangler secret put <NAME>` from the respective app directory.
+See **[docs/environment-variables.md](./environment-variables.md)** for the full variable reference.
 
 ---
 
@@ -154,9 +199,33 @@ Deployment is automated via `.github/workflows/deploy.yml`.
 
 **Trigger:** `workflow_run` on the `CI` workflow completing successfully on `main`. This means deploys only happen after lint + typecheck + build pass.
 
-**Jobs:** `deploy-svc-verify` and `deploy-web` run in **parallel** — both are gated only on CI success via `if: github.event.workflow_run.conclusion == 'success'`. Neither job depends on the other.
+**Job order:**
+
+```
+CI (lint + typecheck + build)
+        │
+        ▼
+    migrate          ← applies pending DB migrations against production Neon
+    /       \
+   ▼         ▼
+deploy-   deploy-
+svc-verify  web
+```
+
+- `migrate` runs `pnpm db:migrate` in `packages/db` using the `DATABASE_URL` GitHub secret (Neon production).
+- `deploy-svc-verify` and `deploy-web` both `needs: migrate` — they only start after migrations succeed. If a migration fails, neither Worker is updated.
+- The two deploy jobs run in **parallel** once migrations pass.
 
 **Concurrency:** `cancel-in-progress: false` — deploys are never cancelled mid-flight.
+
+### Adding a migration
+
+1. Edit the schema in `packages/db/src/schema/`
+2. Generate the migration file locally: `DATABASE_URL="..." pnpm db:generate` (from `packages/db/`)
+3. Commit the generated SQL file in `packages/db/src/migrations/` alongside your schema change
+4. Merge to `main` — the `migrate` job applies it automatically before the Workers are updated
+
+> Never apply migrations manually to production after the pipeline is set up. Always go through the PR → merge → pipeline flow to keep the migration history in sync with the deployed code.
 
 ---
 
@@ -164,7 +233,7 @@ Deployment is automated via `.github/workflows/deploy.yml`.
 
 1. Create a Neon project at [neon.tech](https://neon.tech)
 2. Copy the **pooled** connection string (ends in `?sslmode=require`)
-3. Set it as `DATABASE_URL` in GitHub secrets and locally in `.env.local`
+3. Set it as `DATABASE_URL` in GitHub secrets and locally in `apps/web/.dev.vars`
 
 ### Known limitation (Phase 6)
 

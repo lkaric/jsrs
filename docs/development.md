@@ -84,16 +84,7 @@ pnpm build        # build all apps + packages via Turborepo
 
 ## Environment Variables
 
-All variables are documented in `.env.example`. Key groups:
-
-| Variable | Required for |
-|---|---|
-| `DATABASE_URL` | All DB operations |
-| `BETTER_AUTH_SECRET` | Session signing |
-| `BETTER_AUTH_URL` | OAuth callback base URL |
-| `GH_CLIENT_ID/SECRET` | GitHub OAuth |
-| `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
-| `RESEND_API_KEY` | OTP email delivery |
+See **[docs/environment-variables.md](./environment-variables.md)** for the full reference including local setup, production secrets, and Cloudflare Workers specifics.
 
 ## Dev Container
 
@@ -101,7 +92,7 @@ A `.devcontainer/devcontainer.json` is provided for VS Code / GitHub Codespaces.
 
 ## Troubleshooting
 
-**`DATABASE_URL` not picked up** — prefix the command directly: `DATABASE_URL="..." pnpm db:migrate`
+**`DATABASE_URL` not picked up** — for CLI tools (migrations, studio) prefix the command directly: `DATABASE_URL="..." pnpm db:migrate`. For the dev server, ensure `apps/web/.dev.vars` exists — see [docs/environment-variables.md](./environment-variables.md).
 
 **Port conflicts** — web defaults to 3000, svc-verify to 3001. Set `PORT` in `.env.local` to override.
 
