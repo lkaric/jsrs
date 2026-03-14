@@ -91,7 +91,7 @@ All variables are documented in `.env.example`. Key groups:
 | `DATABASE_URL` | All DB operations |
 | `BETTER_AUTH_SECRET` | Session signing |
 | `BETTER_AUTH_URL` | OAuth callback base URL |
-| `GITHUB_CLIENT_ID/SECRET` | GitHub OAuth |
+| `GH_CLIENT_ID/SECRET` | GitHub OAuth |
 | `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
 | `RESEND_API_KEY` | OTP email delivery |
 

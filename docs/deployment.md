@@ -105,8 +105,8 @@ Set these in **Settings → Secrets and variables → Actions**:
 | `DATABASE_URL` | Both | Neon PostgreSQL connection string |
 | `BETTER_AUTH_SECRET` | Both | Random 32-byte secret for better-auth session signing |
 | `BETTER_AUTH_URL` | web | Public base URL, e.g. `https://jsrs.app` — used for OAuth callbacks |
-| `GITHUB_CLIENT_ID` | web | GitHub OAuth app client ID |
-| `GITHUB_CLIENT_SECRET` | web | GitHub OAuth app client secret |
+| `GH_CLIENT_ID` | web | GitHub OAuth app client ID |
+| `GH_CLIENT_SECRET` | web | GitHub OAuth app client secret |
 | `GOOGLE_CLIENT_ID` | web | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | web | Google OAuth client secret |
 | `RESEND_API_KEY` | web | Resend API key for OTP email delivery |
@@ -124,8 +124,8 @@ Local `.env.local` → Cloudflare Worker secrets:
 DATABASE_URL          → wrangler secret put DATABASE_URL
 BETTER_AUTH_SECRET    → wrangler secret put BETTER_AUTH_SECRET
 BETTER_AUTH_URL       → wrangler secret put BETTER_AUTH_URL
-GITHUB_CLIENT_ID      → wrangler secret put GITHUB_CLIENT_ID
-GITHUB_CLIENT_SECRET  → wrangler secret put GITHUB_CLIENT_SECRET
+GH_CLIENT_ID      → wrangler secret put GH_CLIENT_ID
+GH_CLIENT_SECRET  → wrangler secret put GH_CLIENT_SECRET
 GOOGLE_CLIENT_ID      → wrangler secret put GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET  → wrangler secret put GOOGLE_CLIENT_SECRET
 RESEND_API_KEY        → wrangler secret put RESEND_API_KEY
