@@ -79,6 +79,9 @@ main = "@tanstack/react-start/server-entry"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+[[custom_domains]]
+pattern = "js.rs"
+
 [[services]]
 binding = "SVC_VERIFY"
 service = "jsrs-svc-verify"
@@ -138,7 +141,6 @@ Worker secrets are set per-Worker. Run `wrangler secret put <NAME>` from the res
 Deploy from local (requires `wrangler login`):
 
 ```bash
-# Always deploy svc-verify first — web depends on it via service binding
 cd apps/svc-verify && wrangler deploy
 cd apps/web && wrangler deploy
 ```
@@ -151,7 +153,7 @@ Deployment is automated via `.github/workflows/deploy.yml`.
 
 **Trigger:** `workflow_run` on the `CI` workflow completing successfully on `main`. This means deploys only happen after lint + typecheck + build pass.
 
-**Order:** `deploy-svc-verify` runs first. `deploy-web` has `needs: deploy-svc-verify` — it only starts after `svc-verify` is live. This prevents a window where `web` is deployed with a stale or missing service binding target.
+**Jobs:** `deploy-svc-verify` and `deploy-web` run in **parallel** — both are gated only on CI success via `if: github.event.workflow_run.conclusion == 'success'`. Neither job depends on the other.
 
 **Concurrency:** `cancel-in-progress: false` — deploys are never cancelled mid-flight.
 
@@ -178,6 +180,6 @@ After initial setup:
 1. Merge a PR to `main`
 2. Confirm CI workflow completes — check the **Actions** tab
 3. Confirm Deploy workflow triggers via `workflow_run` (appears as a separate run)
-4. **Expected:** `deploy-svc-verify` fails with "no wrangler.toml found" — `apps/svc-verify` not yet scaffolded (Phase 3). `deploy-web` never runs since it `needs: deploy-svc-verify`. Confirm the failure is a missing file, not a Wrangler auth error.
+4. **Expected:** `deploy-svc-verify` fails with "no wrangler.toml found" — `apps/svc-verify` not yet scaffolded (Phase 3). `deploy-web` runs in parallel and should succeed. Confirm the svc-verify failure is a missing file, not a Wrangler auth error.
 5. When `apps/svc-verify` is scaffolded (Phase 3): add `wrangler.toml` → both jobs should pass
 6. End-to-end: push a change to `main` → confirm both Workers updated in Cloudflare dashboard
