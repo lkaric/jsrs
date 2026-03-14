@@ -17,7 +17,8 @@
       "!**/*.zkey",
       "!**/*.wasm",
       "!**/migrations",
-      "!**/.next"
+      "!**/.next",
+      "!**/routeTree.gen.ts"
     ]
   },
   "formatter": {
@@ -53,6 +54,21 @@
       "quoteStyle": "single",
       "trailingCommas": "all",
       "semicolons": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "allowWrongLineComments": false,
+      "tailwindDirectives": true
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "lineWidth": 100
+    },
+    "linter": {
+      "enabled": true
     }
   }
 }

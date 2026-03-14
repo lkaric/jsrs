@@ -1,0 +1,11 @@
+name = "jsrs-web"
+main = "@tanstack/react-start/server-entry"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[services]]
+binding = "SVC_VERIFY"
+service = "jsrs-svc-verify"
+
+[observability]
+enabled = true
