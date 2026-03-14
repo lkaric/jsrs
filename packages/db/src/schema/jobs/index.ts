@@ -9,8 +9,23 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  varchar,
 } from 'drizzle-orm/pg-core';
 import { organization, user } from '../auth/index';
+
+// ── Waitlist ──────────────────────────────────────────────────────────────────
+
+export const waitlistStatusEnum = pgEnum('waitlist_status', ['waitlisted', 'invited', 'onboarded']);
+
+export const waitlist = pgTable('waitlist', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  status: waitlistStatusEnum('status').notNull().default('waitlisted'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at'),
+});
 
 // ── Enums ────────────────────────────────────────────────────────────────────
 
