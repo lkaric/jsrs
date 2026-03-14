@@ -2,16 +2,24 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema/index';
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is required');
+type DB = ReturnType<typeof drizzle<typeof schema>>;
+
+let _db: DB | null = null;
+
+function getDb(): DB {
+  if (!_db) {
+    const url = process.env.DATABASE_URL;
+    if (!url) throw new Error('DATABASE_URL environment variable is required');
+    const client = postgres(url, { max: 10, idle_timeout: 20, connect_timeout: 10 });
+    _db = drizzle(client, { schema });
+  }
+  return _db;
 }
 
-const client = postgres(process.env.DATABASE_URL, {
-  max: 10,
-  idle_timeout: 20,
-  connect_timeout: 10,
+export const db = new Proxy({} as DB, {
+  get(_, prop: string | symbol) {
+    return getDb()[prop as keyof DB];
+  },
 });
 
-export const db = drizzle(client, { schema });
-
-export type Database = typeof db;
+export type Database = DB;
