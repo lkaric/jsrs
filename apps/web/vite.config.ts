@@ -13,4 +13,14 @@ export default defineConfig({
       projects: ['./tsconfig.json'],
     }),
   ],
+  // Force esbuild to use the new JSX runtime for all files including node_modules.
+  // This prevents the CJS framer-motion bundle from leaving client.tsx with
+  // unresolved React.createElement calls when the Cloudflare plugin pre-bundles.
+  esbuild: {
+    jsx: 'automatic',
+    jsxImportSource: 'react',
+  },
+  optimizeDeps: {
+    include: ['framer-motion'],
+  },
 });
