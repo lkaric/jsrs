@@ -7,9 +7,5 @@ compatibility_flags = ["nodejs_compat"]
 pattern = "js.rs"
 custom_domain = true
 
-[[services]]
-binding = "SVC_VERIFY"
-service = "jsrs-svc-verify"
-
 [observability]
 enabled = true
