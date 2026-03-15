@@ -1,8 +1,7 @@
 import { authClient } from '@jsrs/auth';
-import { Button, Input, Label } from '@jsrs/ui';
+import { Button, cn, Input, Label } from '@jsrs/ui';
 import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
-import type React from 'react';
 import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { z } from 'zod';
@@ -19,7 +18,7 @@ export const RegisterForm: React.FC = () => {
 
   const form = useForm({
     defaultValues: { name: '', email: '', password: '' },
-    validators: { onSubmit: formSchema, onBlur: formSchema },
+    validators: { onSubmit: formSchema },
     onSubmit: async ({ value }) => {
       setServerError(null);
       const { error } = await authClient.signUp.email({
@@ -55,10 +54,10 @@ export const RegisterForm: React.FC = () => {
         Create account
       </h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <form.Field name="name">
           {(field) => (
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
                 Full name
               </Label>
@@ -71,16 +70,14 @@ export const RegisterForm: React.FC = () => {
                 onBlur={field.handleBlur}
                 className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
               />
-              {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
-              )}
+              <p className="min-h-4 text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
             </div>
           )}
         </form.Field>
 
         <form.Field name="email">
           {(field) => (
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
                 Email
               </Label>
@@ -93,16 +90,14 @@ export const RegisterForm: React.FC = () => {
                 onBlur={field.handleBlur}
                 className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
               />
-              {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
-              )}
+              <p className="min-h-4 text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
             </div>
           )}
         </form.Field>
 
         <form.Field name="password">
           {(field) => (
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
                 Password
               </Label>
@@ -115,11 +110,16 @@ export const RegisterForm: React.FC = () => {
                 onBlur={field.handleBlur}
                 className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
               />
-              {field.state.meta.errors.length > 0 ? (
-                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
-              ) : (
-                <p className="text-xs text-neutral-400">Minimum 8 characters</p>
-              )}
+              <p
+                className={cn(
+                  'min-h-4 text-xs',
+                  field.state.meta.errors.length > 0 ? 'text-red-500' : 'text-neutral-400',
+                )}
+              >
+                {field.state.meta.errors.length > 0
+                  ? field.state.meta.errors[0]?.message
+                  : 'Minimum 8 characters'}
+              </p>
             </div>
           )}
         </form.Field>

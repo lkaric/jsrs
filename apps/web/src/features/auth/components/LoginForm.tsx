@@ -18,7 +18,7 @@ export const LoginForm: React.FC = () => {
 
   const form = useForm({
     defaultValues: { email: '', password: '' },
-    validators: { onSubmit: formSchema, onBlur: formSchema },
+    validators: { onSubmit: formSchema },
     onSubmit: async ({ value }) => {
       setServerError(null);
       const { error } = await authClient.signIn.email({
@@ -51,10 +51,10 @@ export const LoginForm: React.FC = () => {
     <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-xl dark:border-white/10 dark:bg-white/5">
       <h1 className="mb-6 text-xl font-semibold text-neutral-900 dark:text-white">Sign in</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <form.Field name="email">
           {(field) => (
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
                 Email
               </Label>
@@ -67,16 +67,14 @@ export const LoginForm: React.FC = () => {
                 onBlur={field.handleBlur}
                 className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
               />
-              {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
-              )}
+              <p className="min-h-4 text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
             </div>
           )}
         </form.Field>
 
         <form.Field name="password">
           {(field) => (
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
                 Password
               </Label>
@@ -89,9 +87,7 @@ export const LoginForm: React.FC = () => {
                 onBlur={field.handleBlur}
                 className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
               />
-              {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
-              )}
+              <p className="min-h-4 text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
             </div>
           )}
         </form.Field>
