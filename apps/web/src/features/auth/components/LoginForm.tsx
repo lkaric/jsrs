@@ -1,5 +1,5 @@
 import { authClient } from '@jsrs/auth';
-import { Input, Label } from '@jsrs/ui';
+import { Button, Input, Label } from '@jsrs/ui';
 import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
 import type React from 'react';
@@ -65,11 +65,7 @@ export const LoginForm: React.FC = () => {
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className={
-                  field.state.meta.errors.length > 0
-                    ? 'border-red-500'
-                    : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white'
-                }
+                className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
               />
               {field.state.meta.errors.length > 0 && (
                 <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
@@ -91,11 +87,7 @@ export const LoginForm: React.FC = () => {
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className={
-                  field.state.meta.errors.length > 0
-                    ? 'border-red-500'
-                    : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white'
-                }
+                className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
               />
               {field.state.meta.errors.length > 0 && (
                 <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
@@ -108,13 +100,9 @@ export const LoginForm: React.FC = () => {
 
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="mt-2 cursor-pointer rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
-            >
+            <Button type="submit" disabled={isSubmitting} className="mt-2 w-full">
               {isSubmitting ? 'Signing in…' : 'Sign in'}
-            </button>
+            </Button>
           )}
         </form.Subscribe>
       </form>
@@ -126,29 +114,21 @@ export const LoginForm: React.FC = () => {
       </div>
 
       <div className="flex flex-col gap-3">
-        <button
-          type="button"
-          onClick={handleGitHubSignIn}
-          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-        >
+        <Button type="button" variant="outline" onClick={handleGitHubSignIn} className="w-full">
           <FaGithub className="size-4" />
           GitHub
-        </button>
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={handleGoogleSignIn} className="w-full">
           <FaGoogle className="size-4" />
           Google
-        </button>
+        </Button>
       </div>
 
       <p className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
         No account?{' '}
         <a
           href="/register"
-          className="cursor-pointer text-neutral-900 underline-offset-2 hover:underline dark:text-white"
+          className="text-neutral-900 underline-offset-2 hover:underline dark:text-white"
         >
           Register
         </a>

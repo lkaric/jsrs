@@ -1,5 +1,7 @@
 /** biome-ignore-all lint/suspicious/noUnknownAtRules: Tailwindcss */
 @import "tailwindcss";
+@source "../../../../packages/ui/src";
+@source "../../../../packages/ui/src";
 
 @theme {
   --font-family-serif: "Playfair Display", serif;
@@ -36,7 +38,7 @@
 
 /* shadcn/ui CSS vars */
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --background: #fdfcf8;
   --foreground: #1a1a1a;
   --card: #ffffff;
@@ -54,7 +56,7 @@
   --destructive: #ef4444;
   --border: #e5e5e5;
   --input: #e5e5e5;
-  --ring: #a3a3a3;
+  --ring: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -76,7 +78,7 @@
     --destructive: #f87171;
     --border: rgba(255, 255, 255, 0.1);
     --input: rgba(255, 255, 255, 0.15);
-    --ring: #737373;
+    --ring: #ffffff;
   }
 }
 
