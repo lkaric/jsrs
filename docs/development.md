@@ -31,7 +31,7 @@ See **[docs/environment-variables.md](./environment-variables.md)** for the full
 
 ## Database — Neon Branching Workflow
 
-The app uses **Neon's HTTP driver** (`@neondatabase/serverless`) which is required for Cloudflare Workers compatibility. This means each developer works against a **Neon branch** rather than a local Docker postgres.
+The app uses **Neon's HTTP driver** (`@neondatabase/serverless`) which is required for Cloudflare Workers compatibility. This means each developer works against a **Neon branch** rather than a local postgres.
 
 ### Setting up your dev branch
 
