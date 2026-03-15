@@ -7,9 +7,9 @@ import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { z } from 'zod';
 
 const formSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(8),
+  name: z.string().min(2, 'Name must be at least 2 characters.'),
+  email: z.string().email('Enter a valid email address.'),
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
 
 export function RegisterForm() {
@@ -18,7 +18,7 @@ export function RegisterForm() {
 
   const form = useForm({
     defaultValues: { name: '', email: '', password: '' },
-    validators: { onSubmit: formSchema },
+    validators: { onSubmit: formSchema, onBlur: formSchema },
     onSubmit: async ({ value }) => {
       setServerError(null);
       const { error } = await authClient.signUp.email({
@@ -29,7 +29,6 @@ export function RegisterForm() {
       if (error) {
         setServerError(error.message ?? 'Could not create account. Please try again.');
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await navigate({ to: '/onboarding/employer' });
       }
     },
@@ -72,6 +71,9 @@ export function RegisterForm() {
                     : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white',
                 )}
               />
+              {field.state.meta.errors.length > 0 && (
+                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+              )}
             </div>
           )}
         </form.Field>
@@ -99,6 +101,9 @@ export function RegisterForm() {
                     : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white',
                 )}
               />
+              {field.state.meta.errors.length > 0 && (
+                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+              )}
             </div>
           )}
         </form.Field>
@@ -126,7 +131,11 @@ export function RegisterForm() {
                     : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white',
                 )}
               />
-              <p className="text-xs text-neutral-400">Minimum 8 characters</p>
+              {field.state.meta.errors.length > 0 ? (
+                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+              ) : (
+                <p className="text-xs text-neutral-400">Minimum 8 characters</p>
+              )}
             </div>
           )}
         </form.Field>
@@ -138,7 +147,7 @@ export function RegisterForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-neutral-700 disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+              className="mt-2 cursor-pointer rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
             >
               {isSubmitting ? 'Creating account…' : 'Create account'}
             </button>
@@ -158,7 +167,7 @@ export function RegisterForm() {
           onClick={() =>
             authClient.signIn.social({ provider: 'github', callbackURL: '/onboarding/employer' })
           }
-          className="flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
           <FaGithub className="size-4" />
           GitHub
@@ -168,7 +177,7 @@ export function RegisterForm() {
           onClick={() =>
             authClient.signIn.social({ provider: 'google', callbackURL: '/onboarding/employer' })
           }
-          className="flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
           <FaGoogle className="size-4" />
           Google
@@ -179,7 +188,7 @@ export function RegisterForm() {
         Already have an account?{' '}
         <a
           href="/login"
-          className="text-neutral-900 underline-offset-2 hover:underline dark:text-white"
+          className="cursor-pointer text-neutral-900 underline-offset-2 hover:underline dark:text-white"
         >
           Sign in
         </a>

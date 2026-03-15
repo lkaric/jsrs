@@ -6,7 +6,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <span className="font-mono text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            <span className="text-brand-accent">.js</span>.rs
+            js<span className="text-brand-accent">.rs</span>
           </span>
         </div>
         {children}
