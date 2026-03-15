@@ -14,7 +14,7 @@ A Glassdoor alternative for the tech industry with **cryptographic anonymity gua
 | Full-stack app | TanStack Start | SSR + typed server functions |
 | Auth | better-auth | Organizations plugin for employer accounts |
 | ORM | Drizzle ORM | Schema-first, fully typed |
-| DB | PostgreSQL | Docker (local), Neon (production) |
+| DB | PostgreSQL via Neon | Neon dev branches (local), Neon main branch (production) |
 | ZKP | Semaphore (off-chain) + snarkjs | Browser WASM proof generation |
 | UI | shadcn/ui + Tailwind CSS v4 | |
 | Email | Resend | OTP delivery |

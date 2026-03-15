@@ -4,7 +4,7 @@
 
 - **Node.js** >= 24.13.0 (use `.node-version` with fnm/nvm)
 - **pnpm** >= 9
-- **Docker** + Docker Compose
+- **Neon account** — [neon.tech](https://neon.tech) (free tier is sufficient)
 
 ## First-Time Setup
 
@@ -12,31 +12,64 @@
 git clone https://github.com/lkaric/jsrs
 cd jsrs
 pnpm install
-cp .env.example .env.local
 ```
 
-Edit `.env.local` — every variable is documented in `.env.example`.
+Create `apps/web/.dev.vars` with your Neon dev branch connection string:
 
-## Starting the Database
+```ini
+DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require
+BETTER_AUTH_SECRET=dev-secret-replace-in-production
+BETTER_AUTH_URL=http://localhost:3000
+GH_CLIENT_ID=
+GH_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+RESEND_API_KEY=
+```
+
+See **[docs/environment-variables.md](./environment-variables.md)** for the full variable reference.
+
+## Database — Neon Branching Workflow
+
+The app uses **Neon's HTTP driver** (`@neondatabase/serverless`) which is required for Cloudflare Workers compatibility. This means each developer works against a **Neon branch** rather than a local postgres.
+
+### Setting up your dev branch
+
+1. Go to the [Neon dashboard](https://console.neon.tech) → your project
+2. Click **Branches → New branch**, name it `dev/yourname`, branch from `main`
+3. Copy the connection string and put it in `apps/web/.dev.vars` as `DATABASE_URL`
+4. Apply migrations against your branch:
 
 ```bash
-docker compose up -d          # starts Postgres 16 on localhost:5432
-docker compose logs -f db     # tail logs
-docker compose down           # stop
+cd packages/db
+DATABASE_URL="postgresql://..." pnpm db:migrate
+```
+
+Your branch is isolated — reset, nuke, or recreate it freely without affecting production or other developers.
+
+### Resetting your dev branch
+
+```bash
+# In the Neon dashboard: Branches → your branch → Reset to parent
+# Then re-apply migrations:
+cd packages/db && DATABASE_URL="postgresql://..." pnpm db:migrate
 ```
 
 ## Database Migrations
 
 ```bash
 # Generate a new migration after schema changes
+cd packages/db
 DATABASE_URL="postgresql://..." pnpm db:generate
 
-# Apply pending migrations
+# Apply pending migrations to your dev branch
 DATABASE_URL="postgresql://..." pnpm db:migrate
 
 # Open Drizzle Studio (visual DB browser)
 DATABASE_URL="postgresql://..." pnpm db:studio
 ```
+
+Always commit the generated SQL file in `packages/db/src/migrations/` alongside your schema change. The deploy pipeline applies migrations to production automatically before deploying Workers.
 
 ## Regenerating the better-auth Schema
 
@@ -85,10 +118,6 @@ pnpm build        # build all apps + packages via Turborepo
 ## Environment Variables
 
 See **[docs/environment-variables.md](./environment-variables.md)** for the full reference including local setup, production secrets, and Cloudflare Workers specifics.
-
-## Dev Container
-
-A `.devcontainer/devcontainer.json` is provided for VS Code / GitHub Codespaces. It includes Docker-in-Docker so `docker compose up -d` works out of the box.
 
 ## Troubleshooting
 

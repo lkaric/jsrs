@@ -10,7 +10,7 @@ Create `apps/web/.dev.vars` (gitignored). Wrangler reads this file automatically
 
 ```ini
 # apps/web/.dev.vars
-DATABASE_URL=postgresql://jsrs:jsrs_dev_password@localhost:5432/jsrs_dev
+DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require
 BETTER_AUTH_SECRET=dev-secret-replace-in-production
 BETTER_AUTH_URL=http://localhost:3000
 GH_CLIENT_ID=
@@ -21,6 +21,8 @@ RESEND_API_KEY=
 ```
 
 > **Important:** No quotes around values. Wrangler's `.dev.vars` parser does not strip them.
+
+`DATABASE_URL` must point to a **Neon branch**, not a local postgres. The app uses `@neondatabase/serverless` (HTTP driver) for Cloudflare Workers compatibility — a raw TCP postgres connection will not work. See [docs/development.md](./development.md) for the Neon branching workflow.
 
 ---
 
@@ -50,8 +52,7 @@ Non-sensitive vars (e.g. `BETTER_AUTH_URL`) can be added to `wrangler.toml` unde
 |---|---|---|
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
 
-Local: Docker Compose at `localhost:5432` (see `docker-compose.yml`).
-Production: Neon — `postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require`.
+Both local dev and production use Neon. Local dev uses a personal branch; production uses the main branch. See [docs/development.md](./development.md) for branch setup.
 
 ### Auth (better-auth)
 
