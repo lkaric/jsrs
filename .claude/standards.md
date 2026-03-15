@@ -61,6 +61,16 @@ return (
 
 **Exception:** TanStack Form's render-prop children (`field => <div>`) are fine inline since they are an API constraint, not application logic.
 
+## Form validation errors
+
+TanStack Form with zod returns ZodIssue objects in `field.state.meta.errors`. Use optional chaining to access `.message`:
+
+```tsx
+{field.state.meta.errors.length > 0 && (
+  <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
+)}
+```
+
 ## File Structure
 
 Feature-based. Routes are thin shells; all logic, components, and server functions live in `apps/web/src/features/<feature>/`.
