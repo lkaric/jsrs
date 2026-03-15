@@ -1,25 +1,30 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema/index';
 
-type DB = ReturnType<typeof drizzle<typeof schema>>;
+export type Database = ReturnType<typeof drizzle<typeof schema>>;
 
-let _db: DB | null = null;
+let _db: Database | null = null;
 
-function getDb(): DB {
+function getDb(): Database {
   if (!_db) {
     const url = process.env.DATABASE_URL;
     if (!url) throw new Error('DATABASE_URL environment variable is required');
-    const client = postgres(url, { max: 10, idle_timeout: 20, connect_timeout: 10 });
-    _db = drizzle(client, { schema });
+    _db = drizzle(neon(url), { schema });
   }
   return _db;
 }
 
-export const db = new Proxy({} as DB, {
+/**
+ * Drizzle instance backed by Neon's HTTP driver.
+ *
+ * Each query is a stateless HTTP POST — no persistent TCP socket, no
+ * cross-request I/O sharing. Safe to use as a module-level singleton in
+ * Cloudflare Workers. Lazily initialised on first use so process.env is
+ * read inside a request handler rather than at module load time.
+ */
+export const db = new Proxy({} as Database, {
   get(_, prop: string | symbol) {
-    return getDb()[prop as keyof DB];
+    return getDb()[prop as keyof Database];
   },
 });
-
-export type Database = DB;
