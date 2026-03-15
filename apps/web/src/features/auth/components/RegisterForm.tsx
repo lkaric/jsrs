@@ -6,9 +6,6 @@ import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { z } from 'zod';
 
-const getErrorMessage = (error: unknown): string =>
-  typeof error === 'string' ? error : ((error as { message: string })?.message ?? String(error));
-
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   email: z.string().email('Enter a valid email address.'),
@@ -82,9 +79,7 @@ export const RegisterForm: React.FC = () => {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">
-                  {getErrorMessage(field.state.meta.errors[0])}
-                </p>
+                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
               )}
             </div>
           )}
@@ -114,9 +109,7 @@ export const RegisterForm: React.FC = () => {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">
-                  {getErrorMessage(field.state.meta.errors[0])}
-                </p>
+                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
               )}
             </div>
           )}
@@ -146,9 +139,7 @@ export const RegisterForm: React.FC = () => {
                 )}
               />
               {field.state.meta.errors.length > 0 ? (
-                <p className="text-xs text-red-500">
-                  {getErrorMessage(field.state.meta.errors[0])}
-                </p>
+                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
               ) : (
                 <p className="text-xs text-neutral-400">Minimum 8 characters</p>
               )}

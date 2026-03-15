@@ -6,9 +6,6 @@ import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { z } from 'zod';
 
-const getErrorMessage = (error: unknown): string =>
-  typeof error === 'string' ? error : ((error as { message: string })?.message ?? String(error));
-
 const formSchema = z.object({
   email: z.string().email('Enter a valid email address.'),
   password: z.string().min(8, 'Password must be at least 8 characters.'),
@@ -78,9 +75,7 @@ export const LoginForm: React.FC = () => {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">
-                  {getErrorMessage(field.state.meta.errors[0])}
-                </p>
+                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
               )}
             </div>
           )}
@@ -110,9 +105,7 @@ export const LoginForm: React.FC = () => {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">
-                  {getErrorMessage(field.state.meta.errors[0])}
-                </p>
+                <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
               )}
             </div>
           )}
