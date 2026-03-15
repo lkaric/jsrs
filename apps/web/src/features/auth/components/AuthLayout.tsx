@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+type Props = { children: React.ReactNode };
 
-export function AuthLayout({ children }: { children: ReactNode }) {
+export const AuthLayout: React.FC<Props> = ({ children }) => {
   return (
     <main className="flex min-h-screen items-center justify-center bg-canvas-light px-4 dark:bg-canvas-dark">
       <div className="w-full max-w-sm">
@@ -13,4 +13,4 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       </div>
     </main>
   );
-}
+};

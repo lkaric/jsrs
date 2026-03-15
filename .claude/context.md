@@ -8,6 +8,7 @@ JSRS is a Glassdoor alternative with cryptographic anonymity via Zero-Knowledge 
 - ZKP system → [docs/zkp-system.md](../docs/zkp-system.md)
 - Dev commands → [docs/development.md](../docs/development.md)
 - Commit/branch conventions → [CONTRIBUTING.md](../CONTRIBUTING.md)
+- Coding standards (component style, imports, handlers) → [.claude/standards.md](./standards.md)
 
 ---
 

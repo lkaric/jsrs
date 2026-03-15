@@ -10,7 +10,7 @@ const formSchema = z.object({
   email: z.string().email().min(1).max(255),
 });
 
-export function WaitlistForm() {
+export const WaitlistForm: React.FC = () => {
   const [subscribed, setSubscribed] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -124,4 +124,4 @@ export function WaitlistForm() {
       )}
     </AnimatePresence>
   );
-}
+};

@@ -6,13 +6,16 @@ import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { z } from 'zod';
 
+const getErrorMessage = (error: unknown): string =>
+  typeof error === 'string' ? error : ((error as { message: string })?.message ?? String(error));
+
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   email: z.string().email('Enter a valid email address.'),
   password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
 
-export function RegisterForm() {
+export const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -34,20 +37,27 @@ export function RegisterForm() {
     },
   });
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    void form.handleSubmit();
+  };
+
+  const handleGitHubSignUp = () => {
+    void authClient.signIn.social({ provider: 'github', callbackURL: '/onboarding/employer' });
+  };
+
+  const handleGoogleSignUp = () => {
+    void authClient.signIn.social({ provider: 'google', callbackURL: '/onboarding/employer' });
+  };
+
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-xl dark:border-white/10 dark:bg-white/5">
       <h1 className="mb-6 text-xl font-semibold text-neutral-900 dark:text-white">
         Create account
       </h1>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-        className="flex flex-col gap-4"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <form.Field name="name">
           {(field) => (
             <div className="flex flex-col gap-1.5">
@@ -72,7 +82,9 @@ export function RegisterForm() {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+                <p className="text-xs text-red-500">
+                  {getErrorMessage(field.state.meta.errors[0])}
+                </p>
               )}
             </div>
           )}
@@ -102,7 +114,9 @@ export function RegisterForm() {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+                <p className="text-xs text-red-500">
+                  {getErrorMessage(field.state.meta.errors[0])}
+                </p>
               )}
             </div>
           )}
@@ -132,7 +146,9 @@ export function RegisterForm() {
                 )}
               />
               {field.state.meta.errors.length > 0 ? (
-                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+                <p className="text-xs text-red-500">
+                  {getErrorMessage(field.state.meta.errors[0])}
+                </p>
               ) : (
                 <p className="text-xs text-neutral-400">Minimum 8 characters</p>
               )}
@@ -164,9 +180,7 @@ export function RegisterForm() {
       <div className="flex flex-col gap-3">
         <button
           type="button"
-          onClick={() =>
-            authClient.signIn.social({ provider: 'github', callbackURL: '/onboarding/employer' })
-          }
+          onClick={handleGitHubSignUp}
           className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
           <FaGithub className="size-4" />
@@ -174,9 +188,7 @@ export function RegisterForm() {
         </button>
         <button
           type="button"
-          onClick={() =>
-            authClient.signIn.social({ provider: 'google', callbackURL: '/onboarding/employer' })
-          }
+          onClick={handleGoogleSignUp}
           className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
           <FaGoogle className="size-4" />
@@ -195,4 +207,4 @@ export function RegisterForm() {
       </p>
     </div>
   );
-}
+};

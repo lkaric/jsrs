@@ -2,11 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { WaitlistForm } from '@/features/waitlist/components/WaitlistForm';
 
-export const Route = createFileRoute('/')({
-  component: Home,
-});
-
-function Home() {
+const Home: React.FC = () => {
   return (
     <main className="min-h-[calc(100vh-64px)] bg-canvas-light dark:bg-canvas-dark">
       <div className="relative flex min-h-[80vh] flex-col items-center justify-center overflow-hidden px-6">
@@ -53,4 +49,8 @@ function Home() {
       </div>
     </main>
   );
-}
+};
+
+export const Route = createFileRoute('/')({
+  component: Home,
+});

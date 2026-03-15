@@ -4,13 +4,21 @@ import { getSession } from '@/features/auth/server/getSession';
 
 import appCss from '../styles/globals.css?url';
 
-function NotFound() {
+const NotFound: React.FC = () => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <p className="text-neutral-500">404 — Page not found</p>
     </div>
   );
-}
+};
+
+const RootComponent: React.FC = () => {
+  return (
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
+  );
+};
 
 export const Route = createRootRoute({
   beforeLoad: async () => ({
@@ -36,15 +44,7 @@ export const Route = createRootRoute({
   notFoundComponent: NotFound,
 });
 
-function RootComponent() {
-  return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
-  );
-}
-
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+const RootDocument: React.FC<Readonly<{ children: ReactNode }>> = ({ children }) => {
   return (
     <html lang="en">
       <head>
@@ -56,4 +56,4 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </body>
     </html>
   );
-}
+};

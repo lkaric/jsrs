@@ -6,12 +6,15 @@ import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { z } from 'zod';
 
+const getErrorMessage = (error: unknown): string =>
+  typeof error === 'string' ? error : ((error as { message: string })?.message ?? String(error));
+
 const formSchema = z.object({
   email: z.string().email('Enter a valid email address.'),
   password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
 
-export function LoginForm() {
+export const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -32,18 +35,25 @@ export function LoginForm() {
     },
   });
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    void form.handleSubmit();
+  };
+
+  const handleGitHubSignIn = () => {
+    void authClient.signIn.social({ provider: 'github', callbackURL: '/dashboard' });
+  };
+
+  const handleGoogleSignIn = () => {
+    void authClient.signIn.social({ provider: 'google', callbackURL: '/dashboard' });
+  };
+
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-xl dark:border-white/10 dark:bg-white/5">
       <h1 className="mb-6 text-xl font-semibold text-neutral-900 dark:text-white">Sign in</h1>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-        className="flex flex-col gap-4"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <form.Field name="email">
           {(field) => (
             <div className="flex flex-col gap-1.5">
@@ -68,7 +78,9 @@ export function LoginForm() {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+                <p className="text-xs text-red-500">
+                  {getErrorMessage(field.state.meta.errors[0])}
+                </p>
               )}
             </div>
           )}
@@ -98,7 +110,9 @@ export function LoginForm() {
                 )}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-xs text-red-500">{String(field.state.meta.errors[0])}</p>
+                <p className="text-xs text-red-500">
+                  {getErrorMessage(field.state.meta.errors[0])}
+                </p>
               )}
             </div>
           )}
@@ -128,9 +142,7 @@ export function LoginForm() {
       <div className="flex flex-col gap-3">
         <button
           type="button"
-          onClick={() =>
-            authClient.signIn.social({ provider: 'github', callbackURL: '/dashboard' })
-          }
+          onClick={handleGitHubSignIn}
           className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
           <FaGithub className="size-4" />
@@ -138,9 +150,7 @@ export function LoginForm() {
         </button>
         <button
           type="button"
-          onClick={() =>
-            authClient.signIn.social({ provider: 'google', callbackURL: '/dashboard' })
-          }
+          onClick={handleGoogleSignIn}
           className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
           <FaGoogle className="size-4" />
@@ -159,4 +169,4 @@ export function LoginForm() {
       </p>
     </div>
   );
-}
+};
