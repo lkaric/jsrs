@@ -1,7 +1,8 @@
 import { authClient } from '@jsrs/auth';
+import { Input, Label } from '@jsrs/ui';
 import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
-import clsx from 'clsx';
+import type React from 'react';
 import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { z } from 'zod';
@@ -54,25 +55,21 @@ export const LoginForm: React.FC = () => {
         <form.Field name="email">
           {(field) => (
             <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor={field.name}
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-              >
+              <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
                 Email
-              </label>
-              <input
+              </Label>
+              <Input
                 id={field.name}
                 type="email"
                 autoComplete="email"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className={clsx(
-                  'rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none transition-colors dark:bg-white/5 dark:text-white',
+                className={
                   field.state.meta.errors.length > 0
                     ? 'border-red-500'
-                    : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white',
-                )}
+                    : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white'
+                }
               />
               {field.state.meta.errors.length > 0 && (
                 <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
@@ -84,25 +81,21 @@ export const LoginForm: React.FC = () => {
         <form.Field name="password">
           {(field) => (
             <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor={field.name}
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-              >
+              <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
                 Password
-              </label>
-              <input
+              </Label>
+              <Input
                 id={field.name}
                 type="password"
                 autoComplete="current-password"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className={clsx(
-                  'rounded-lg border bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none transition-colors dark:bg-white/5 dark:text-white',
+                className={
                   field.state.meta.errors.length > 0
                     ? 'border-red-500'
-                    : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white',
-                )}
+                    : 'border-neutral-200 focus:border-neutral-900 dark:border-white/10 dark:focus:border-white'
+                }
               />
               {field.state.meta.errors.length > 0 && (
                 <p className="text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
