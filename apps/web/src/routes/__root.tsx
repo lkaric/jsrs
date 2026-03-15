@@ -1,5 +1,8 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
+import { getSession } from '@/features/auth/server/getSession';
+
+import appCss from '../styles/globals.css?url';
 
 function NotFound() {
   return (
@@ -9,9 +12,10 @@ function NotFound() {
   );
 }
 
-import appCss from '../styles/globals.css?url';
-
 export const Route = createRootRoute({
+  beforeLoad: async () => ({
+    session: await getSession(),
+  }),
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
