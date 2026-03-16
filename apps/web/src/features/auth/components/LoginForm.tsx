@@ -1,7 +1,7 @@
 import { authClient } from '@jsrs/auth';
-import { Button, Input, Label } from '@jsrs/ui';
 import { useForm } from '@tanstack/react-form';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
@@ -15,6 +15,7 @@ const formSchema = z.object({
 export const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     defaultValues: { email: '', password: '' },
@@ -48,86 +49,122 @@ export const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-xl dark:border-white/10 dark:bg-white/5">
-      <h1 className="mb-6 text-xl font-semibold text-neutral-900 dark:text-white">Sign in</h1>
+    <div>
+      <Link
+        to="/"
+        className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-500 transition-colors hover:text-white"
+      >
+        <ChevronLeft size={16} />
+        Back
+      </Link>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <div className="mb-10">
+        <span className="mb-8 block font-mono text-xl font-bold tracking-tight text-white">
+          js<span className="text-brand-accent">.rs</span>
+        </span>
+        <h1 className="font-serif text-5xl text-white">Welcome back.</h1>
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <form.Field name="email">
           {(field) => (
-            <div className="flex flex-col gap-1">
-              <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
-                Email
-              </Label>
-              <Input
+            <div className="flex flex-col gap-1.5">
+              <input
                 id={field.name}
                 type="email"
                 autoComplete="email"
+                placeholder="email@example.com"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
+                className={`w-full rounded-full border bg-zinc-900 px-8 py-4 text-white placeholder-zinc-600 outline-none transition-colors focus:border-brand-accent ${field.state.meta.errors.length > 0 ? 'border-red-500' : 'border-white/10'}`}
               />
-              <p className="min-h-4 text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
+              {field.state.meta.errors.length > 0 && (
+                <p className="px-4 text-xs text-red-400">{field.state.meta.errors[0]?.message}</p>
+              )}
             </div>
           )}
         </form.Field>
 
         <form.Field name="password">
           {(field) => (
-            <div className="flex flex-col gap-1">
-              <Label htmlFor={field.name} className="text-neutral-700 dark:text-neutral-300">
-                Password
-              </Label>
-              <Input
-                id={field.name}
-                type="password"
-                autoComplete="current-password"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
-                className={field.state.meta.errors.length > 0 ? 'border-red-500' : ''}
-              />
-              <p className="min-h-4 text-xs text-red-500">{field.state.meta.errors[0]?.message}</p>
+            <div className="flex flex-col gap-1.5">
+              <div className="relative">
+                <input
+                  id={field.name}
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  className={`w-full rounded-full border bg-zinc-900 px-8 py-4 text-white placeholder-zinc-600 outline-none transition-colors focus:border-brand-accent ${field.state.meta.errors.length > 0 ? 'border-red-500' : 'border-white/10'}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500 transition-colors hover:text-white"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {field.state.meta.errors.length > 0 && (
+                <p className="px-4 text-xs text-red-400">{field.state.meta.errors[0]?.message}</p>
+              )}
             </div>
           )}
         </form.Field>
 
-        {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+        <div className="text-right">
+          <span className="text-xs text-zinc-500">Forgot password?</span>
+        </div>
+
+        {serverError && <p className="px-4 text-sm text-red-400">{serverError}</p>}
 
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
-            <Button type="submit" disabled={isSubmitting} className="mt-2 w-full">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-2 w-full rounded-full bg-white py-4 font-semibold text-zinc-900 transition-colors hover:bg-brand-accent disabled:opacity-50"
+            >
               {isSubmitting ? 'Signing in…' : 'Sign in'}
-            </Button>
+            </button>
           )}
         </form.Subscribe>
       </form>
 
-      <div className="my-6 flex items-center gap-3">
-        <div className="h-px flex-1 bg-neutral-200 dark:bg-white/10" />
-        <span className="text-xs text-neutral-400">or</span>
-        <div className="h-px flex-1 bg-neutral-200 dark:bg-white/10" />
+      <div className="my-8 flex items-center gap-3">
+        <div className="h-px flex-1 bg-white/10" />
+        <span className="text-xs text-zinc-500">Or continue with</span>
+        <div className="h-px flex-1 bg-white/10" />
       </div>
 
-      <div className="flex flex-col gap-3">
-        <Button type="button" variant="outline" onClick={handleGitHubSignIn} className="w-full">
-          <FaGithub className="size-4" />
-          GitHub
-        </Button>
-        <Button type="button" variant="outline" onClick={handleGoogleSignIn} className="w-full">
-          <FaGoogle className="size-4" />
-          Google
-        </Button>
-      </div>
-
-      <p className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
-        No account?{' '}
-        <a
-          href="/register"
-          className="text-neutral-900 underline-offset-2 hover:underline dark:text-white"
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={handleGitHubSignIn}
+          className="flex flex-1 items-center justify-center gap-2 rounded-full border border-white/10 bg-zinc-900 py-3.5 text-sm font-medium text-white transition-colors hover:border-white/30"
         >
-          Register
-        </a>
+          <FaGithub size={16} />
+          GitHub
+        </button>
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="flex flex-1 items-center justify-center gap-2 rounded-full border border-white/10 bg-zinc-900 py-3.5 text-sm font-medium text-white transition-colors hover:border-white/30"
+        >
+          <FaGoogle size={16} />
+          Google
+        </button>
+      </div>
+
+      <p className="mt-8 text-center text-sm text-zinc-500">
+        No account?{' '}
+        <Link to="/register" className="text-white transition-colors hover:text-brand-accent">
+          Register →
+        </Link>
       </p>
     </div>
   );
